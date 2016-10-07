@@ -1,0 +1,12 @@
+bin/
+obj/
+
+*.userprefs
+*.usertasks
+
+*.pidb
+*.resources
+
+packages
+test-results/
+TestResult.xml
