@@ -20,6 +20,11 @@ namespace Takarakuji
             xs.RemoveAll(_x => EqualityComparer<T>.Default.Equals(x, _x));
         }
 
+        public void Clear()
+        {
+            xs.RemoveAll(x => true);
+        }
+
         public int Total()
         {
             return xs.Count;
