@@ -4,39 +4,43 @@ namespace Takarakuji
 {
     public class Lot<T>
     {
-        private List<T> xs = new List<T>();
-        private Xorshift random = new Xorshift();
+        private readonly List<T> _xs = new List<T>();
+        private readonly Xorshift _random;
 
+        public Lot(Xorshift random)
+        {
+            _random = random ?? Xorshift.Default;
+        }
         public void Add(T x, int count = 1)
         {
             for (var i = 0; i < count; i++)
             {
-                xs.Add(x);
+                _xs.Add(x);
             }
         }
 
         public void Remove(T x)
         {
-            xs.RemoveAll(_x => EqualityComparer<T>.Default.Equals(x, _x));
+            _xs.RemoveAll(e => EqualityComparer<T>.Default.Equals(x, e));
         }
 
         public void Clear()
         {
-            xs.RemoveAll(x => true);
+            _xs.RemoveAll(x => true);
         }
 
         public int Total()
         {
-            return xs.Count;
+            return _xs.Count;
         }
 
         public T Draw(bool removeIt = true)
         {
-            var idx = random.Range(0, (uint)xs.Count);
-            var x = xs[(int)idx];
+            var idx = _random.Range(0, (uint)_xs.Count);
+            var x = _xs[(int)idx];
             if (removeIt)
             {
-                xs.RemoveAt((int)idx);
+                _xs.RemoveAt((int)idx);
             }
             return x;
         }
@@ -44,27 +48,29 @@ namespace Takarakuji
 
     public class Xorshift
     {
-        private uint x = 123456789;
-        private uint y = 362436069;
-        private uint z = 521288629;
-        private uint w = 88675123;
+        private uint _x = 123456789;
+        private uint _y = 362436069;
+        private uint _z = 521288629;
+        private uint _w = 88675123;
 
-        public void Seed(uint x, uint y, uint z, uint w)
+        public static Xorshift Default = new Xorshift();
+
+        public void Seed(uint? x, uint? y, uint? z, uint w)
         {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-            this.w = w;
+            if (x != null) _x = x.Value;
+            if (y != null) _y = y.Value;
+            if (z != null) _z = z.Value;
+            _w = w;
         }
 
         public uint Next()
         {
-            uint t = x ^ (x << 11);
-            x = y;
-            y = z;
-            z = w;
-            w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
-            return w;
+            var t = _x ^ (_x << 11);
+            _x = _y;
+            _y = _z;
+            _z = _w;
+            _w = (_w ^ (_w >> 19)) ^ (t ^ (t >> 8));
+            return _w;
         }
 
         public uint Range(uint min, uint max)
